@@ -15,7 +15,6 @@ from schemas.user import UserSchema
 from blocklist import BLOCKLIST
 
 
-BLANK_ERROR = "'{}' cannot be blank."
 USER_ALREADY_EXISTS = "A user with that username already exists."
 CREATED_SUCCESSFULLY = "User created successfully."
 USER_NOT_FOUND = "User not found."
