@@ -6,8 +6,8 @@ from ma import ma
 from db import db
 from blocklist import BLOCKLIST
 from resources.user import UserRegister, UserLogin, User, TokenRefresh, UserLogout
-# from resources.item import Item, ItemList
-# from resources.store import Store, StoreList
+from resources.item import Item, ItemList
+from resources.store import Store, StoreList
 
 #def create_app(db_url=None):
 app = Flask(__name__)
@@ -33,10 +33,10 @@ jwt = JWTManager(app)
 def check_if_token_in_blocklist(jwt_header, jwt_payload):
     return jwt_payload["jti"] in BLOCKLIST
 
-# api.add_resource(Store, "/store/<string:name>")
-# api.add_resource(StoreList, "/stores")
-# api.add_resource(Item, "/item/<string:name>")
-# api.add_resource(ItemList, "/items")
+api.add_resource(Store, "/store/<string:name>")
+api.add_resource(StoreList, "/stores")
+api.add_resource(Item, "/item/<string:name>")
+api.add_resource(ItemList, "/items")
 api.add_resource(UserRegister, "/register")
 api.add_resource(User, "/user/<int:user_id>")
 api.add_resource(UserLogin, "/login")
