@@ -2,6 +2,7 @@ from flask import Flask
 from flask_restful import Api
 from flask_jwt_extended import JWTManager
 
+from ma import ma
 from db import db
 from blocklist import BLOCKLIST
 from resources.user import UserRegister, UserLogin, User, TokenRefresh, UserLogout
@@ -22,6 +23,8 @@ api = Api(app)
 db.init_app(app)
 with app.app_context():
     db.create_all()
+
+ma.init_app(app)
 
 jwt = JWTManager(app)
 

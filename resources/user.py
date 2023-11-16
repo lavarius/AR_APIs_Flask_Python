@@ -29,14 +29,13 @@ class UserRegister(Resource):
     @classmethod
     def post(cls):
         try:
-            data_user = user_schema.load(request.get_json())
+            user = user_schema.load(request.get_json())
         except ValidationError as err:
             return err.messages, 400
 
-        if UserModel.find_by_username(data_user["username"]):
+        if UserModel.find_by_username(user.username):
             return {"message": USER_ALREADY_EXISTS}, 400
 
-        user = UserModel(**data_user)
         user.save_to_db()
 
         return {"message": CREATED_SUCCESSFULLY}, 201
@@ -73,10 +72,10 @@ class UserLogin(Resource):
         except ValidationError as err:
             return err.messages, 400
 
-        user = UserModel.find_by_username(data_user["username"])
+        user = UserModel.find_by_username(data_user.username)
 
         # this is what the `authenticate()` function did in security.py
-        if user and compare_digest(user.password, data_user["password"]):
+        if user and compare_digest(user.password, data_user.password):
             # identity= is what the identity() function did in security.py—now stored in the JWT
             access_token = create_access_token(identity=user.id, fresh=True)
             refresh_token = create_refresh_token(user.id)
