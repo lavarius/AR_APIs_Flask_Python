@@ -1,3 +1,4 @@
+import traceback
 from flask_restful import Resource
 from flask import request, make_response, render_template
 from hmac import compare_digest
@@ -16,6 +17,7 @@ from blocklist import BLOCKLIST
 
 
 USER_ALREADY_EXISTS = "A user with that username already exists."
+EMAIL_ALREADY_EXISTS = "A user with that email already exists."
 CREATED_SUCCESSFULLY = "User created successfully."
 USER_NOT_FOUND = "User not found."
 USER_DELETED = "User deleted."
@@ -23,6 +25,8 @@ INVALID_CREDENTIALS = "Invalid credentials!"
 USER_LOGGED_OUT = "User <id={}> successfully logged out."
 NOT_COONFIRMED_ERROR = "You have not confirmed registration, please check your email <{}>."
 USER_CONFIRMED = "User Confirmed."
+FAILED_TO_CREATE = "Internal server error. Failed to create user."
+SUCCESS_REGISTER_MESSAGE = "Account created successfully, an email with an activation link has been sent to your email address, pleasecheck."
 
 user_schema = UserSchema()
 
@@ -34,10 +38,17 @@ class UserRegister(Resource):
 
         if UserModel.find_by_username(user.username):
             return {"message": USER_ALREADY_EXISTS}, 400
+        
+        if UserModel.find_by_eamail(user.email):
+            return {"message": EMAIL_ALREADY_EXISTS}, 400
 
-        user.save_to_db()
-
-        return {"message": CREATED_SUCCESSFULLY}, 201
+        try:
+            user.save_to_db()
+            user.send_confirmation_email()
+            return {"message": CREATED_SUCCESSFULLY}, 201
+        except:
+            traceback.print_exc()
+            return {"message": FAILED_TO_CREATE}, 500
 
 
 class User(Resource):
@@ -66,7 +77,7 @@ class UserLogin(Resource):
     @classmethod
     def post(cls):
         user_json = request.get_json()
-        data_user = user_schema.load(user_json)
+        data_user = user_schema.load(user_json, partial=("email",))
 
         user = UserModel.find_by_username(data_user.username)
 

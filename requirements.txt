@@ -5,3 +5,5 @@ Flask-SQLAlchemy
 marshmallow
 flask_marshmallow
 marshmallow-sqlalchemy
+requests
+python-dotenv
