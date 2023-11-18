@@ -1,7 +1,9 @@
+import os
 from flask import Flask, jsonify
 from flask_restful import Api
 from flask_jwt_extended import JWTManager
 from marshmallow import ValidationError
+from dotenv import load_dotenv
 
 from ma import ma
 from db import db
@@ -18,10 +20,10 @@ from resources.store import Store, StoreList
 
 #def create_app(db_url=None):
 app = Flask(__name__)
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///data.db"
+app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["PROPAGATE_EXCEPTIONS"] = True
-app.secret_key = "jose"  # could do app.config['JWT_SECRET_KEY'] if we prefer
+app.secret_key = os.getenv("APP_SECRET_KEY")  # could do app.config['JWT_SECRET_KEY'] if we prefer
 api = Api(app)
 
 
