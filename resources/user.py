@@ -23,7 +23,7 @@ USER_NOT_FOUND = "User not found."
 USER_DELETED = "User deleted."
 INVALID_CREDENTIALS = "Invalid credentials!"
 USER_LOGGED_OUT = "User <id={}> successfully logged out."
-NOT_COONFIRMED_ERROR = "You have not confirmed registration, please check your email <{}>."
+NOT_CONFIRMED_ERROR = "You have not confirmed registration, please check your email <{}>."
 USER_CONFIRMED = "User Confirmed."
 FAILED_TO_CREATE = "Internal server error. Failed to create user."
 SUCCESS_REGISTER_MESSAGE = "Account created successfully, an email with an activation link has been sent to your email address, pleasecheck."
@@ -77,18 +77,18 @@ class UserLogin(Resource):
     @classmethod
     def post(cls):
         user_json = request.get_json()
-        data_user = user_schema.load(user_json, partial=("email",))
+        user_data = user_schema.load(user_json, partial=("email",))
 
-        user = UserModel.find_by_username(data_user.username)
+        user = UserModel.find_by_username(user_data.username)
 
         # this is what the `authenticate()` function did in security.py
-        if user and compare_digest(user.password, data_user.password):
+        if user and compare_digest(user_data.password, user.password):
             if user.activated:
                 # identity= is what the identity() function did in security.py—now stored in the JWT
                 access_token = create_access_token(identity=user.id, fresh=True)
                 refresh_token = create_refresh_token(user.id)
-                return {"access_token": access_token, "refresh_token": refresh_token}, 200
-            return {"message": NOT_COONFIRMED_ERROR.format(user.username)}, 400
+                return ({"access_token": access_token, "refresh_token": refresh_token}, 200,)
+            return {"message": NOT_CONFIRMED_ERROR.format(user.email)}, 400
 
         return {"message": INVALID_CREDENTIALS}, 401
 
@@ -123,4 +123,4 @@ class UserConfirm(Resource):
         user.save_to_db()
         # return {"message": USER_CONFIRMED}, 200
         headers = {"Content-Type": "text/html"}
-        return make_response(render_template("confirmation_page.html", email=user.username), 200, headers)
+        return make_response(render_template("confirmation_page.html", email=user.email), 200, headers)

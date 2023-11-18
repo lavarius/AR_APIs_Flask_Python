@@ -22,12 +22,12 @@ class UserModel(db.Model):
     activated = db.Column(db.Boolean, default=False)
 
     @classmethod
-    def find_by_username(cls, email: str) -> "UserModel":
-        return cls.query.filter_by(email=email).first()
+    def find_by_username(cls, username: str) -> "UserModel":
+        return cls.query.filter_by(username=username).first()
     
     @classmethod
-    def find_by_email(cls, username: str) -> "UserModel":
-        return cls.query.filter_by(username=username).first()
+    def find_by_email(cls, email: str) -> "UserModel":
+        return cls.query.filter_by(email=email).first()
 
     @classmethod
     def find_by_id(cls, _id: int) -> "UserModel":
