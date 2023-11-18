@@ -39,13 +39,13 @@ class UserRegister(Resource):
         if UserModel.find_by_username(user.username):
             return {"message": USER_ALREADY_EXISTS}, 400
         
-        if UserModel.find_by_eamail(user.email):
+        if UserModel.find_by_email(user.email):
             return {"message": EMAIL_ALREADY_EXISTS}, 400
 
         try:
             user.save_to_db()
             user.send_confirmation_email()
-            return {"message": CREATED_SUCCESSFULLY}, 201
+            return {"message": SUCCESS_REGISTER_MESSAGE}, 201
         except:
             traceback.print_exc()
             return {"message": FAILED_TO_CREATE}, 500
